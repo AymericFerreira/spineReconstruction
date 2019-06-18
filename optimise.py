@@ -124,17 +124,17 @@ def fix_meshes(mesh, detail="normal"):
 
 
 def optimise():
-    meshCounter = len(glob.glob1('mesh/', "*.off")) + len(glob.glob1('mesh/', "*.mesh")) + \
-                  len(glob.glob1('mesh/', "*.msh")) + len(glob.glob1('mesh/', "*.node")) + \
-                  len(glob.glob1('mesh/', "*.ply")) + len(glob.glob1('mesh/', "*.poly")) + \
-                  len(glob.glob1('mesh/', "*.stl"))
+    meshCounter = len(glob.glob1('meshes/', "*.off")) + len(glob.glob1('meshes/', "*.mesh")) + \
+                  len(glob.glob1('meshes/', "*.msh")) + len(glob.glob1('meshes/', "*.node")) + \
+                  len(glob.glob1('meshes/', "*.ply")) + len(glob.glob1('meshes/', "*.poly")) + \
+                  len(glob.glob1('meshes/', "*.stl"))
     print(meshCounter)
     # for mesh in meshCounter:
 
 
 if __name__ == "__main__":
-    mesh = pymesh.load_mesh('/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/mesh/'
-                            'spine_11_18_0.230566534914361.ply')
+    # mesh = pymesh.load_mesh('/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/mesh/'
+    #                         'spine_11_18_0.230566534914361.ply')
     # remove_small_meshes(mesh)
     optimise()
 
