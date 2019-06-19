@@ -136,8 +136,6 @@ def optimise():
         remove_small_meshes(mesh, file)
 
 
-
-
 if __name__ == "__main__":
     # mesh = pymesh.load_mesh('/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/mesh/'
     #                         'spine_11_18_0.230566534914361.ply')

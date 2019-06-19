@@ -2,18 +2,17 @@ import sys
 
 import matplotlib
 
-# matplotlib.use('TkAgg')
-matplotlib.use('Qt5Agg')
-
 import numpy as np
-# from skimage import util
 from pymesh import form_mesh, remove_isolated_vertices, save_mesh
 from skimage import measure
 
 np.set_printoptions(threshold=sys.maxsize)  # variable output
 
+# matplotlib.use('TkAgg')
+matplotlib.use('Qt5Agg')
 
-def filename_range_slider_reconstruction(imagestack, filename):
+
+def range_slider_reconstruction(imagestack):
     imageStack = imagestack
     zSpacing = 0.35/1.518
 
@@ -28,5 +27,6 @@ def filename_range_slider_reconstruction(imagestack, filename):
         # clean mesh
         mesh3, dictMesh = remove_isolated_vertices(mesh2)
         # print('Vertices removed : {0}'.format(dictMesh[0]))
-        meshName = '{0}_{1}_{2}.ply'.format(filename, str(levelThreshold), zSpacing)
-        save_mesh(meshName, mesh3)
+        # meshName = '{0}_{1}_{2}.ply'.format(filename, str(levelThreshold), zSpacing)
+        # save_mesh(meshName, mesh3)
+        return mesh2
