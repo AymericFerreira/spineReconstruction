@@ -1,12 +1,15 @@
 import sys
 import glob
+import os
 
 import numpy as np
 
 import networkx as nx
 import pymesh
 
+
 def remove_small_meshes(mesh):
+    #todo : refactoring
     graph = create_graph(mesh)
     meshSizeList = get_size_of_meshes(graph)
     print(meshSizeList)
@@ -32,8 +35,7 @@ def recreate_meshes(nodeList, mesh):
 
         faces_to_keep = mesh.faces[np.all(to_keep[mesh.faces], axis=1)]
         out_mesh = pymesh.form_mesh(mesh.vertices, faces_to_keep)
-        pymesh.save_mesh(f"/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/optimisedMesh/"
-                         f"mesh{isolatedMeshes+1}.ply", out_mesh, ascii=True)
+        pymesh.save_mesh(f"/isolatedMeshes/{filename}{isolatedMeshes+1}.ply", out_mesh, ascii=True)
 
 
 def is_mesh_broken(mesh, meshCopy):
@@ -124,12 +126,16 @@ def fix_meshes(mesh, detail="normal"):
 
 
 def optimise():
-    meshCounter = len(glob.glob1('meshes/', "*.off")) + len(glob.glob1('meshes/', "*.mesh")) + \
-                  len(glob.glob1('meshes/', "*.msh")) + len(glob.glob1('meshes/', "*.node")) + \
-                  len(glob.glob1('meshes/', "*.ply")) + len(glob.glob1('meshes/', "*.poly")) + \
-                  len(glob.glob1('meshes/', "*.stl"))
-    print(meshCounter)
-    # for mesh in meshCounter:
+    filenameList = glob.glob1('meshes/', "*.off") + glob.glob1('meshes/', "*.mesh") + \
+                   glob.glob1('meshes/', "*.msh") + glob.glob1('meshes/', "*.node") + \
+                   glob.glob1('meshes/', "*.ply") + glob.glob1('meshes/', "*.poly") + \
+                   glob.glob1('meshes/', "*.stl")
+
+    for file in filenameList:
+        mesh = pymesh.load_mesh(file)
+        remove_small_meshes(mesh, file)
+
+
 
 
 if __name__ == "__main__":
@@ -137,5 +143,3 @@ if __name__ == "__main__":
     #                         'spine_11_18_0.230566534914361.ply')
     # remove_small_meshes(mesh)
     optimise()
-
-    print('a')
