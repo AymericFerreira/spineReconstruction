@@ -32,7 +32,7 @@ z-Projection of maximum intensity of the image after segmentation (right) :
 ### Reconstruction
 For the reconstruction I used a fully-automatic method based on **Marching-Cubes algorithm**
 
-![Spine after reconstruction](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/MAX_spine_9_segmentedImage.png)
+![Spine after reconstruction](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/reconstruction.png)
 
 
 ### Optimisation
