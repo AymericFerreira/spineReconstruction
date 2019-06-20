@@ -24,13 +24,16 @@ z-Projection of maximum intensity of the image before segmentation (left) and
 z-Projection of maximum intensity of the image after segmentation (right) : 
 
 ![Spine before Segmentation](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/MAX_spine_9.png)
-![Image](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/MAX_spine_9_segmentedImage.png)
+![Spine after Segmentation](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/MAX_spine_9_segmentedImage.png)
 
 
 
 
 ### Reconstruction
 For the reconstruction I used a fully-automatic method based on **Marching-Cubes algorithm**
+
+![Spine after reconstruction](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/MAX_spine_9_segmentedImage.png)
+
 
 ### Optimisation
 After reconstruction the mesh can be noisy and not optimised (isolated vertices, duplicated faces, too long or
@@ -47,6 +50,14 @@ Some metrics to analyse meshes :
     - Open angle between the vertices and the normal of length
     - Average distance between the base of the mesh and all vertices
 
+![Spine length](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/spine_length.png)
+![Surface](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/surface.png)
+![Volume](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/volume.png)
+![Connectivity](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/connectivity.png)
+![Open angle](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/open_angle.png)
+![Average distance](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/average_distance.png)
+![Gaussian curvature](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/gauss_curv.png)
+![Mean curvature](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/mean_curv.png)
 
 
 ## Conclusion
