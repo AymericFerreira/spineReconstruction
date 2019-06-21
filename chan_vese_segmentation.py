@@ -4,7 +4,7 @@ import sys
 import matplotlib
 
 # matplotlib.use('TkAgg')
-matplotlib.use('Qt5Agg')
+# matplotlib.use('Qt5Agg')
 
 import matplotlib.pyplot as plt
 import numpy as np

@@ -4,9 +4,12 @@ A collection of python scripts to extract objects from microscopic images and re
 This project is based mainly on [Pymesh](https://github.com/PyMesh/PyMesh) and 
 [Scikit-Image](https://scikit-image.org/).
 
+The project is **still in development** if you need to use a part of all the project, do not hesitate
+to contact me ! 
+
 ## Purpose
 
-The code is based on 5 steps, from the image obtained after acquisition to the calculation of metrics, and
+The code is divided in 5 steps, from the image obtained after acquisition to the calculation of metrics, and
 divided in 5 explicitly named python files.
 
 ### Image enhancement
@@ -49,6 +52,9 @@ Some metrics to analyse meshes :
     - Volume
     - Open angle between the vertices and the normal of length
     - Average distance between the base of the mesh and all vertices
+    - Mesh length
+    - Gaussian and mean curvature
+    - 
 
 ![Spine length](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/spine_length.png)
 ![Surface](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/surface.png)
@@ -60,6 +66,13 @@ Some metrics to analyse meshes :
 ![Mean curvature](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/mean_curv.png)
 
 
-## Conclusion
-I use this collection of script to extract dendritic spines from confocal images and reconstruct the shape
- of the spine in 3 dimensions. I assumed this technique can be used for other 
+### Installation
+
+PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html) and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx)
+Others can be installed via pip with the command : *pip install -r requirements.txt*
+
+
+### Utilisation
+
+You can use it simply with the command *python scriptname.py* if you match with the image files names.
+Also, if you are more familiar with python you can import the functions directly in your python project.
