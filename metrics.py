@@ -1,6 +1,6 @@
 import pymesh
 
-from draw import *
+from IO.draw import *
 
 
 def center_mesh(mesh):

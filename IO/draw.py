@@ -1,8 +1,6 @@
-import numpy as np
-from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-
 import matplotlib.pyplot as plt
-from extractData import *
+from IO.extractData import *
+
 
 def plot_numpy_bar(array, xLabel, yLabel, title):
     print(array.size)
@@ -62,6 +60,7 @@ def plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(array, xLab
 
     fig.colorbar(p, label='number of neighbors')
     plt.show()
+
 
 def plot_metrics_and_variance():
     data=[24,8,8,0,-11.63,0.72]

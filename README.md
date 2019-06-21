@@ -10,7 +10,8 @@ to contact me !
 
 ## Installation
 
-PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html) and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx)
+PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html)
+ and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx).
 Others can be installed via pip with the command : *pip install -r requirements.txt*
 
 
@@ -70,7 +71,7 @@ Some metrics to analyse meshes :
     - Average distance between the base of the mesh and all vertices
     - Mesh length
     - Gaussian and mean curvature
-    - And more
+    - And more ...
 
 ![Spine length](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/spine_length.png)
 ![Surface](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/surface.png)

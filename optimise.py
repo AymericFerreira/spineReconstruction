@@ -6,6 +6,7 @@ import numpy as np
 
 import networkx as nx
 import pymesh
+import IO.meshIO as meshIO
 
 
 def remove_small_meshes(mesh):
@@ -22,11 +23,14 @@ def remove_small_meshes(mesh):
     for meshNumber in range(len(meshList)):
         meshList[meshNumber] = list(meshList[meshNumber])
 
-    recreate_meshes(meshList, mesh)
+    isolatedMeshesList = recreate_meshes(meshList, mesh)
+    return isolatedMeshesList
 
 
 def recreate_meshes(nodeList, mesh):
     # todo : refactoring
+
+    isolatedMeshesList = []
 
     for isolatedMeshes in range(len(nodeList)):
         to_keep = np.ones(mesh.num_vertices, dtype=bool)
@@ -35,7 +39,10 @@ def recreate_meshes(nodeList, mesh):
 
         faces_to_keep = mesh.faces[np.all(to_keep[mesh.faces], axis=1)]
         out_mesh = pymesh.form_mesh(mesh.vertices, faces_to_keep)
-        pymesh.save_mesh(f"/isolatedMeshes/{filename}{isolatedMeshes+1}.ply", out_mesh, ascii=True)
+        isolatedMeshesList.append(out_mesh)
+        # pymesh.save_mesh(f"/isolatedMeshes/{filename}{isolatedMeshes+1}.ply", out_mesh, ascii=True)
+
+    return isolatedMeshesList
 
 
 def is_mesh_broken(mesh, meshCopy):
@@ -133,7 +140,10 @@ def optimise():
 
     for file in filenameList:
         mesh = pymesh.load_mesh(file)
-        remove_small_meshes(mesh, file)
+        isolatedMeshesList = remove_small_meshes(mesh)
+        for subMeshnumber, isolatedMesh in enumerate(isolatedMeshesList):
+            optimisedMesh = fix_meshes(isolatedMesh)
+            meshIO.save_optimised_mesh(mesh, subMeshnumber, file)
 
 
 if __name__ == "__main__":
