@@ -7,6 +7,19 @@ This project is based mainly on [Pymesh](https://github.com/PyMesh/PyMesh) and
 The project is **still in development** if you need to use a part of all the project, do not hesitate
 to contact me ! 
 
+
+### Installation
+
+PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html) and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx)
+Others can be installed via pip with the command : *pip install -r requirements.txt*
+
+
+### Utilisation
+
+You can use it simply with the command *python scriptname.py* if you match with the image files names.
+Also, if you are more familiar with python you can import the functions directly in your python project.
+
+
 ## Purpose
 
 The code is divided in 5 steps, from the image obtained after acquisition to the calculation of metrics, and
@@ -54,7 +67,7 @@ Some metrics to analyse meshes :
     - Average distance between the base of the mesh and all vertices
     - Mesh length
     - Gaussian and mean curvature
-    - 
+    - And more
 
 ![Spine length](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/spine_length.png)
 ![Surface](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/surface.png)
@@ -65,14 +78,3 @@ Some metrics to analyse meshes :
 ![Gaussian curvature](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/gauss_curv.png)
 ![Mean curvature](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/mean_curv.png)
 
-
-### Installation
-
-PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html) and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx)
-Others can be installed via pip with the command : *pip install -r requirements.txt*
-
-
-### Utilisation
-
-You can use it simply with the command *python scriptname.py* if you match with the image files names.
-Also, if you are more familiar with python you can import the functions directly in your python project.
