@@ -8,7 +8,7 @@ The project is **still in development** if you need to use a part of all the pro
 to contact me ! 
 
 
-### Installation
+## Installation
 
 PyMesh is the only one who can't be installed through pip. See [Pymesh official install documentation](https://pymesh.readthedocs.io/en/latest/installation.html) and [Non-official installation doc (working better)](https://github.com/PyMesh/PyMesh/files/2999684/PyMesh.Installation.on.Ubuntu.18.10.docx)
 Others can be installed via pip with the command : *pip install -r requirements.txt*
@@ -48,6 +48,9 @@ z-Projection of maximum intensity of the image after segmentation (right) :
 ### Reconstruction
 For the reconstruction I used a fully-automatic method based on **Marching-Cubes algorithm**
 
+`
+Thomas Lewiner, Helio Lopes, Antonio Wilson Vieira and Geovan Tavares. Efficient implementation of Marching Cubes’
+ cases with topological guarantees. Journal of Graphics Tools 8(2) pp. 1-15 (december 2003). DOI:10.1080/10867651.2003.10487582`
 ![Spine after reconstruction](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/reconstruction.png)
 
 
