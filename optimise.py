@@ -40,14 +40,16 @@ def recreate_meshes(nodeList, mesh):
         faces_to_keep = mesh.faces[np.all(to_keep[mesh.faces], axis=1)]
         out_mesh = pymesh.form_mesh(mesh.vertices, faces_to_keep)
         isolatedMeshesList.append(out_mesh)
-        # pymesh.save_mesh(f"/isolatedMeshes/{filename}{isolatedMeshes+1}.ply", out_mesh, ascii=True)
+        # pymesh.save_mesh(f"/isolatedMeshes/a{isolatedMeshes+1}.ply", out_mesh, ascii=True)
+        # meshIO.save_optimised_mesh(isolatedMeshes, )
+
 
     return isolatedMeshesList
 
 
 def is_mesh_broken(mesh, meshCopy):
-    print(np.max((get_size_of_meshes(create_graph(mesh)))))
-    print(0.1*np.max(get_size_of_meshes(create_graph(mesh))))
+    # print(np.max((get_size_of_meshes(create_graph(mesh)))))
+    # print(0.1*np.max(get_size_of_meshes(create_graph(mesh))))
     if np.max((get_size_of_meshes(create_graph(mesh))) < 0.1*np.max(get_size_of_meshes(create_graph(mesh)))):
         return True
     else:
@@ -60,13 +62,11 @@ def create_graph(mesh):
         meshGraph.add_edge(faces[0], faces[1])
         meshGraph.add_edge(faces[1], faces[2])
         meshGraph.add_edge(faces[0], faces[2])
-
     return meshGraph
 
 
 def get_size_of_meshes(graph):
     meshSize = [len(c) for c in nx.connected_components(graph)]
-
     return meshSize
 
 
@@ -99,7 +99,7 @@ def fix_meshes(mesh, detail="normal"):
     mesh, __ = pymesh.split_long_edges(mesh, target_len)
     num_vertices = mesh.num_vertices
     while True:
-        mesh, __ = pymesh.collapse_short_edges(mesh, 1e-6)
+        mesh, __ = pymesh.collapse_short_edges(mesh, 1e-4)
         mesh, __ = pymesh.collapse_short_edges(mesh, target_len,
                                                preserve_feature=True)
         mesh, __ = pymesh.remove_obtuse_triangles(mesh, 150.0, 100)
@@ -133,21 +133,18 @@ def fix_meshes(mesh, detail="normal"):
 
 
 def optimise():
-    filenameList = glob.glob1('meshes/', "*.off") + glob.glob1('meshes/', "*.mesh") + \
-                   glob.glob1('meshes/', "*.msh") + glob.glob1('meshes/', "*.node") + \
-                   glob.glob1('meshes/', "*.ply") + glob.glob1('meshes/', "*.poly") + \
-                   glob.glob1('meshes/', "*.stl")
+    filenameList = meshIO.load_folder()
 
     for file in filenameList:
         mesh = pymesh.load_mesh(file)
         isolatedMeshesList = remove_small_meshes(mesh)
         for subMeshnumber, isolatedMesh in enumerate(isolatedMeshesList):
             optimisedMesh = fix_meshes(isolatedMesh)
-            meshIO.save_optimised_mesh(mesh, subMeshnumber, file)
+            meshIO.save_optimised_mesh(optimisedMesh, subMeshnumber, file.split('/')[-1])
 
 
 if __name__ == "__main__":
     # mesh = pymesh.load_mesh('/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/mesh/'
-    #                         'spine_11_18_0.230566534914361.ply')
+                            # 'spine_11_18_0.230566534914361.ply')
     # remove_small_meshes(mesh)
     optimise()

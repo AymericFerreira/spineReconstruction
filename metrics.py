@@ -1,4 +1,8 @@
 import pymesh
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 from IO.draw import *
 
@@ -146,6 +150,16 @@ def calculate_angle(point1, point2, point3):
     angle = np.arccos(np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2)))
 
     return angle
+
+
+def calculate_edges(mesh):
+    edgeList = []
+    for face in mesh.faces:
+        edgeList.append([face[0], face[1]])
+        edgeList.append([face[0], face[2]])
+        edgeList.append([face[1], face[2]])
+
+    return edgeList
 
 
 def calculate_hull_volume(mesh):
@@ -343,10 +357,10 @@ def neighbor_calc(mesh):
 
     result = np.column_stack((mesh.vertices, np.transpose(neighborArray)))
 
-    # plot_3d_scatter_with_color(result, 'X', 'Y', "Z", 'title')
+    # plot_3d_scatter_with_color(result, 'X', 'Y', "Z", 'Number of neighbors')
     plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(result, 'X', 'Y', "Z", 'Spine in pixel',
                                                                      gravity_center(mesh), find_spine_base_center(mesh))
-    plot_frequency(np.transpose(neighborArray), 'frequency', 'neighbor', "node")
+    # plot_frequency(np.transpose(neighborArray), 'frequency', 'neighbor', "node")
     print(find_spine_base_center(mesh))
 
 
@@ -374,17 +388,65 @@ def get_frequency2(mesh):
     print('\n')
 
 
+def find_fixed(mesh):
+    edges = calculate_edges(mesh)
+    fixed = []
+    for edge in edges:
+        if np.sum(np.multiply(np.sum(mesh.faces == edge[0], axis=1), np.sum(mesh.faces == edge[1], axis=1))) < 2:
+            fixed.append(edge[0])
+            fixed.append(edge[1])
+
+    print(np.unique(fixed))
+    plot_3d_scatter_fixed(mesh.vertices, fixed, 'X', 'Y', "Z", 'Spine in pixel')
+    #     if edge in mesh.faces:
+    print(f'edges : {np.shape(edges)}, faces : {np.shape(mesh.faces)}')
+
+
+def compare_gravity_and_edges(mesh):
+    edges = calculate_edges(mesh)
+    fig = plt.figure()
+    scatterPlot = fig.add_subplot(111, projection='3d')
+
+    # p = scatterPlot.scatter(array[:, 0], array[:, 1], array[:, 2], c=array[:, 3], cmap='Set1', alpha=0.75)
+    scatterPlot.scatter(mesh.vertices[:, 0], mesh.vertices[:, 1], mesh.vertices[:, 2], alpha=0.75)
+    fixed = []
+    for edge in edges:
+        if np.sum(np.multiply(np.sum(mesh.faces == edge[0], axis=1), np.sum(mesh.faces == edge[1], axis=1))) < 2:
+            fixed.append(edge[0])
+            fixed.append(edge[1])
+            xs = [mesh.vertices[edge[0], 0], mesh.vertices[edge[1], 0]]
+            ys = [mesh.vertices[edge[0], 1], mesh.vertices[edge[1], 1]]
+            zs = [mesh.vertices[edge[0], 2], mesh.vertices[edge[1], 2]]
+            plt.plot(xs, ys, zs, color='red')
+
+    # plt.show()
+    # fixed = np.unique(fixed)
+    # print(np.shape(mesh.vertices[fixed]))
+    # x, y, z = np.mean(mesh.vertices[fixed][:, 0]), np.mean(mesh.vertices[fixed][:, 1]), np.mean(mesh.vertices[fixed][:, 2])
+    # print(f'edges : {x}, {y}, {z}')
+    # print(find_spine_base_center2(mesh))
+    # print(find_spine_base_center(mesh))
+    #
+    # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(mesh.vertices, 'X', 'Y', "Z", 'Spine in pixel', [x, y, z], find_spine_base_center(mesh))
+
+
 if __name__ == "__main__":
     # Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
     # filename = askopenfilename()
-    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Segmentation/Reconstruction/spine255.ply'
-    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/3D_projection/cube_simple.ply'
+    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Segmentation/Reconstruction/spine255.ply'
+    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/optimisedMesh/mesh3.ply'
     meshSpine = pymesh.load_mesh(filename)
+
+    # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(m)
+    # neighbor_calc(meshSpine)
+    # compare_gravity_and_edges(meshSpine)
+    # find_fixed(meshSpine)
+    # print(calculate_edges(meshSpine))
     # neighbor_calc(meshSpine)
     # find_spine_base_center(meshSpine)
     # find_spine_base_center(meshSpine)
     # neighbor_calc(meshSpine)
     # neighbor_calc2(meshSpine)
-    calculate_metrics(meshSpine)
+    # calculate_metrics(meshSpine)
     # print(mesh_volume(meshSpine))
     # print(mesh_volume3(meshSpine))
