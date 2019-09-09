@@ -4,8 +4,7 @@ A collection of python scripts to extract objects from microscopic images and re
 This project is based mainly on [Pymesh](https://github.com/PyMesh/PyMesh) and 
 [Scikit-Image](https://scikit-image.org/).
 
-The project is **still in development** if you need to use a part of all the project, do not hesitate
-to contact me ! 
+The project is **still in development** if you need to use a part or all the project and you need help, do not hesitate to contact me ! 
 
 
 ## Installation
