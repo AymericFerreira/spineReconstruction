@@ -184,7 +184,7 @@ def filename_plan_segmentation(imagestack, filename):
 
     # Treatment and export
 
-    segmentedImageName = 'segmented_Image/' + filename + '_segmentedImage.tif'
+    segmentedImageName = 'segmentedImages/' + filename + '_segmentedImage.tif'
     # with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
     #     for image in range(imageStack.shape[0]):
     #         tif.save(imageStack[image], compress=0)
