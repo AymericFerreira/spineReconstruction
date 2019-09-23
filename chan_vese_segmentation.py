@@ -13,6 +13,7 @@ import skimage
 from matplotlib.widgets import Slider, Button
 from skimage.color import rgb2gray
 from skimage.segmentation import mark_boundaries, chan_vese
+from skimage import io
 
 np.set_printoptions(threshold=sys.maxsize)  # variable output
 
@@ -184,8 +185,18 @@ def filename_plan_segmentation(imagestack, filename):
     # Treatment and export
 
     segmentedImageName = 'segmented_Image/' + filename + '_segmentedImage.tif'
-    with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
-        for image in range(imageStack.shape[0]):
-            tif.save(imageStack[image], compress=0)
+    # with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
+    #     for image in range(imageStack.shape[0]):
+    #         tif.save(imageStack[image], compress=0)
+
+    skimage.io.imsave(segmentedImageName, image)
 
     return imageStack
+
+
+if __name__ == "__main__":
+    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/images/Deconvolved_3.tif'
+    image = io.imread(filename)
+    filename = 'deconvolved'
+    filename_plan_segmentation(image, filename)
+#
