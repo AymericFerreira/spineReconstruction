@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 import networkx as nx
-import pymesh
+# import pymesh
 import IO.meshIO as meshIO
 
 import trimesh
@@ -43,7 +43,7 @@ def recreate_meshes(nodeList, mesh):
         to_keep = ~np.array(to_keep)  # True become False and vice-versa
 
         faces_to_keep = mesh.faces[np.all(to_keep[mesh.faces], axis=1)]
-        out_mesh = pymesh.form_mesh(mesh.vertices, faces_to_keep)
+        out_mesh = trimesh.Trimesh(vertices=mesh.vertices, faces=mesh.faces, process=False)
         isolatedMeshesList.append(out_mesh)
         # pymesh.save_mesh(f"/isolatedMeshes/a{isolatedMeshes+1}.ply", out_mesh, ascii=True)
         # meshIO.save_optimised_mesh(isolatedMeshes, )

@@ -88,6 +88,7 @@ def count_number_of_meshes(mesh):
 
 def fix_meshes(mesh, detail="normal"):
     meshCopy = mesh
+    print(f'type {type(mesh)}')
 
     # copy/pasta of pymesh script fix_mesh from qnzhou, see pymesh on GitHub
     bbox_min, bbox_max = mesh.bbox
@@ -107,7 +108,7 @@ def fix_meshes(mesh, detail="normal"):
         mesh, __ = pymesh.collapse_short_edges(mesh, 1e-4)
         mesh, __ = pymesh.collapse_short_edges(mesh, target_len,
                                                preserve_feature=True)
-        mesh, __ = pymesh.remove_obtuse_triangles(mesh, 150.0, 100)
+        mesh, __ = pymesh.remove_obtuse_triangles(mesh, 91.0, 5)
         if mesh.num_vertices == num_vertices:
             break
 
@@ -120,7 +121,7 @@ def fix_meshes(mesh, detail="normal"):
     mesh, __ = pymesh.remove_duplicated_faces(mesh)
     mesh = pymesh.compute_outer_hull(mesh)
     mesh, __ = pymesh.remove_duplicated_faces(mesh)
-    mesh, __ = pymesh.remove_obtuse_triangles(mesh, 179.0, 5)
+    mesh, __ = pymesh.remove_obtuse_triangles(mesh, 91.0, 5)
     mesh, __ = pymesh.remove_isolated_vertices(mesh)
 
     if is_mesh_broken(mesh, meshCopy) is True:
@@ -157,37 +158,37 @@ def fix_meshes_with_note(mesh, detail="normal"):
     mesh, __ = pymesh.split_long_edges(mesh, target_len)
     num_vertices = mesh.num_vertices
     while True:
-        print(f'loop : {count}, before collapse : {mesh.num_vertices}')
+        # print(f'loop : {count}, before collapse : {mesh.num_vertices}')
         mesh, __ = pymesh.collapse_short_edges(mesh, 1e-4)
-        print(f'After collapse 1 : {mesh.num_vertices}')
+        # print(f'After collapse 1 : {mesh.num_vertices}')
         mesh, __ = pymesh.collapse_short_edges(mesh, target_len,
                                                preserve_feature=True)
-        print(f'After collapse 2 : {mesh.num_vertices}')
-        mesh, info = pymesh.remove_obtuse_triangles(mesh, 150.0, 100)
-        print(f'Remove obtuse triangles : {mesh.num_vertices}, {info}')
+        # print(f'After collapse 2 : {mesh.num_vertices}')
+        mesh, info = pymesh.remove_obtuse_triangles(mesh, 179.0, 5)
+        # print(f'Remove obtuse triangles : {mesh.num_vertices}, {info}')
         if mesh.num_vertices == num_vertices:
             break
 
-        print(f'Num vertices : {num_vertices}')
+        # print(f'Num vertices : {num_vertices}')
         num_vertices = mesh.num_vertices
         count += 1
         if count > 10:
             break
 
-    print('1')
+    # print('1')
     mesh = pymesh.resolve_self_intersection(mesh)
-    print(f'2 : {mesh.num_vertices}')
+    # print(f'2 : {mesh.num_vertices}')
     mesh, __ = pymesh.remove_duplicated_faces(mesh)
-    print(f'3 : {mesh.num_vertices}')
+    # print(f'3 : {mesh.num_vertices}')
     mesh = pymesh.compute_outer_hull(mesh)
-    print(f'4 : {mesh.num_vertices}')
+    # print(f'4 : {mesh.num_vertices}')
     mesh, __ = pymesh.remove_duplicated_faces(mesh)
-    print(f'5 : {mesh.num_vertices}')
+    # print(f'5 : {mesh.num_vertices}')
     mesh, __ = pymesh.remove_obtuse_triangles(mesh, 179.0, 5)
-    print(f'6 : {mesh.num_vertices}')
+    # print(f'6 : {mesh.num_vertices}')
     mesh, __ = pymesh.remove_isolated_vertices(mesh)
 
-    print(f'ok : {mesh.num_vertices}')
+    # print(f'ok : {mesh.num_vertices}')
 
     # global note
     note = 1
