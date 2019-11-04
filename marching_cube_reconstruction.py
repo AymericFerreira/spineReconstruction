@@ -30,14 +30,26 @@ def construct_and_optimise_from_lewiner(imageStack, spacingData, levelThreshold)
     return mesh3
 
 
-def verify_mesh_stability(mesh, levelThreshold):
+def verify_mesh_stability(mesh):
     meshList = optimise.get_size_of_meshes(optimise.create_graph(mesh))
     meshList.sort(reverse=True)
-    stability = True
     if len(meshList) > 1:
         if (meshList[0] + meshList[1]) / np.sum(meshList) > 0.9 and meshList[0] / np.sum(meshList) < 0.8:
             stability = False
             print(f'Can"t recontruct this spine {filename}')
+    pass
+
+
+def automatic_marching_cube_reconstruction(dirpath, filename):
+    print(f'optimisedMeshes/{filename.strip(".tif").split("/")[-1]}_mesh_.stl')
+    imageStack = io.imread(f'{dirpath}/{filename}')
+    zSpacing = 0.35 / 1.518
+
+    levelThreshold = 0
+    stability = True
+
+    mesh = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
+
 
     while stability is True:
         if levelThreshold > 200:
@@ -52,8 +64,10 @@ def verify_mesh_stability(mesh, levelThreshold):
         mesh2 = form_mesh(vertices, faces)
         meshList = optimise.get_size_of_meshes(optimise.create_graph(mesh2))
         meshList.sort(reverse=True)
+        # meshList = meshList[meshList > 0.01 * np.sum(meshList)] # this line remove 'noise'
+        meshList = [x if x > 0.01 * np.sum(meshList) else 0 for x in meshList]
         if len(meshList) > 1:
-            if (meshList[0]+meshList[1])/np.sum(meshList) > 0.9 and meshList[0]/np.sum(meshList) <0.8:
+            if (meshList[0]+meshList[1])/np.sum(meshList) > 0.9 and meshList[0]/np.sum(meshList) < 0.8:
                 stability = False
                 stability2 = False
                 # neck and head are dissociated
@@ -77,23 +91,10 @@ def verify_mesh_stability(mesh, levelThreshold):
         else:
             levelThreshold += 5
             # Look for narrow reconstruction
-    return mesh2
-
-
-def automatic_marching_cube_reconstruction(dirpath, filename):
-    print(f'optimisedMeshes/{filename.strip(".tif").split("/")[-1]}_mesh_.stl')
-    imageStack = io.imread(f'{dirpath}/{filename}')
-    zSpacing = 0.35 / 1.518
-
-    levelThreshold = 0
-    stability = True
-
-    mesh = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
-    mesh2 = verify_mesh_stability(mesh, levelThreshold)
 
     mesh3 = optimise.fix_meshes(mesh2)
     print(f'Saving mesh with level threshold : {levelThreshold}')
-    save_mesh(f'optimisedMeshes/{levelThreshold}_optimised.stl', mesh3)
+    save_mesh(f'optimisedMeshes/{filename.split(".")[0]}_{levelThreshold}_optimised.stl', mesh3)
 
 
 if __name__ == "__main__":
