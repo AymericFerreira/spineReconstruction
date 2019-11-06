@@ -13,10 +13,14 @@ import skimage
 from matplotlib.widgets import Slider, Button
 from skimage.color import rgb2gray
 from skimage.segmentation import mark_boundaries, chan_vese
+from skimage import io
 
 np.set_printoptions(threshold=sys.maxsize)  # variable output
 
 falseMatrixActivation = 0
+
+def load_exif(filename):
+    pass
 
 
 def filename_plan_segmentation(imagestack, filename):
@@ -70,14 +74,15 @@ def filename_plan_segmentation(imagestack, filename):
             max_iter = 1000
             dt = 0.5
 
-        noColorPlan = rgb2gray(plan)
+        # noColorPlan = rgb2gray(plan)
         # print(plan, noColorPlan)
+        noColorPlan = plan
         cv = chan_vese(noColorPlan, mu=mu_0, lambda1=lambda1_0, lambda2=lambda2_0, tol=tol, max_iter=max_iter / 10, dt=dt,
                        init_level_set='checkerboard', extended_output=True)
 
         # if 16 bit image
         # maxImage2 = maxImage*16
-        # maxImage3 = skimage.img_as_ubyte(maxImages2)
+        # image = skimage.img_as_ubyte(image)
         # ax.imshow(mark_boundaries(maxImage, cv[0]), vmin=0, vmax=4096)
         ax.imshow(mark_boundaries(noColorPlan, cv[0]))
 
@@ -176,16 +181,26 @@ def filename_plan_segmentation(imagestack, filename):
             print('Segmentation done with parameter $\mu$ : {0}, $\lambda_1$ : {1}, $\lambda_2$ : {2}, '
                   'tolerance : {3:1.2e}, ''max iteration : {4:1.2e}, dt : {5}.'.format(mu, lambda1, lambda2, tol,
                                                                                        max_iter, dt))
-
+            print(f'iterations {len(cv[2])}')
             imageStack[loopPosition] = cv[0] * plan
 
         loopPosition += 1
 
     # Treatment and export
 
-    segmentedImageName = 'segmented_Image/' + filename + '_segmentedImage.tif'
+    segmentedImageName = f'segmentedImages/{filename}_segmentedImage.tif'
     with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
         for image in range(imageStack.shape[0]):
             tif.save(imageStack[image], compress=0)
 
+    # skimage.io.imsave(segmentedImageName, imageStack)
+
     return imageStack
+
+
+if __name__ == "__main__":
+    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/images/Deconvolved_3.tif'
+    image = io.imread(filename)
+    filename = 'deconvolved'
+    filename_plan_segmentation(image, filename)
+#
