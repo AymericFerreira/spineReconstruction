@@ -19,6 +19,9 @@ np.set_printoptions(threshold=sys.maxsize)  # variable output
 
 falseMatrixActivation = 0
 
+def load_exif(filename):
+    pass
+
 
 def filename_plan_segmentation(imagestack, filename):
     imageStack = imagestack
@@ -185,12 +188,12 @@ def filename_plan_segmentation(imagestack, filename):
 
     # Treatment and export
 
-    segmentedImageName = 'segmentedImages/' + filename + '_segmentedImage.tif'
-    # with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
-    #     for image in range(imageStack.shape[0]):
-    #         tif.save(imageStack[image], compress=0)
+    segmentedImageName = f'segmentedImages/{filename}_segmentedImage.tif'
+    with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
+        for image in range(imageStack.shape[0]):
+            tif.save(imageStack[image], compress=0)
 
-    skimage.io.imsave(segmentedImageName, imageStack)
+    # skimage.io.imsave(segmentedImageName, imageStack)
 
     return imageStack
 
