@@ -41,7 +41,7 @@ def recreate_meshes(nodeList, mesh):
 
 def is_mesh_broken(mesh, meshCopy):
     if mesh.vertices.size > 0:
-        if np.max((get_size_of_meshes(create_graph(mesh))) < 0.1 * np.max(get_size_of_meshes(create_graph(meshCopy)))):
+        if np.max(get_size_of_meshes(create_graph(mesh))) < 0.1 * np.max(get_size_of_meshes(create_graph(meshCopy))):
             return True
         else:
             return False
