@@ -21,13 +21,8 @@ def construct_mesh_from_lewiner(imageStack, spacingData, levelThreshold):
 
 
 def construct_and_optimise_from_lewiner(imageStack, spacingData, levelThreshold):
-    vertices, faces, normals, values = measure.marching_cubes_lewiner(imageStack,
-                                                                      level=float(levelThreshold),
-                                                                      spacing=spacingData,
-                                                                      allow_degenerate=False)
-    mesh2 = form_mesh(vertices, faces)
-    mesh3 = optimise.fix_meshes(mesh2)
-    return mesh3
+    mesh = optimise.fix_meshes(construct_mesh_from_lewiner(imageStack, spacingData, levelThreshold))
+    return mesh
 
 
 def verify_mesh_stability(mesh):
