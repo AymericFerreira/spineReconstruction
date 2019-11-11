@@ -17,7 +17,11 @@ Others can be installed via pip with the command : *pip install -r requirements.
 
 ### Utilisation
 
-You can use it simply with the command *python scriptname.py* if you match with the image files names.
+Put your images to reconstruct in "Images" folder. Launch the script with the command `python main.py` in the root 
+of the repo. If everything works you will see a window to assist you for the segmentation :
+![Segmentation window](https://github.com/AymericFerreira/spineReconstruction/blob/master/resultExamples/segmentation.png)
+
+
 Also, if you are more familiar with python you can import the functions directly in your python project.
 
 
