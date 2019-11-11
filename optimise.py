@@ -147,7 +147,7 @@ def count_number_of_meshes(mesh):
 
 def fix_meshes(mesh, detail="normal"):
     """
-    A pipeline to optimise and fix mesh based on pymesh Mesh object. # todo : More information about each steps
+    A pipeline to optimise and fix mesh based on pymesh Mesh object.
 
     1. A box is created around the mesh.
     2. A target length is found based on diagonal of the mesh box.
