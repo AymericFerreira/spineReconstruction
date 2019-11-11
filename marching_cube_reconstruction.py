@@ -74,6 +74,12 @@ def verify_mesh_stability(mesh):
 
 
 def automatic_marching_cube_reconstruction(dirpath, filename):
+    """
+
+    :param dirpath:
+    :param filename:
+    :return:
+    """
     print(f'Computing : {filename.strip(".tif").split("/")[-1]}_mesh')
     imageStack = io.imread(f'{dirpath}/{filename}')
     zSpacing = 0.35 / 1.518
