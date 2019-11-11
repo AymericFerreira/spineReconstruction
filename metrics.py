@@ -1,8 +1,16 @@
 import pymesh
 import matplotlib
 matplotlib.use("TkAgg")
-from matplotlib import pyplot as plt
+# matplotlib.use('Qt5Agg')
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
+import plotly.graph_objects as go
+import os
+import pandas as pd
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 
 from IO.draw import *
 
@@ -348,6 +356,40 @@ def calculate_metrics(mesh):
     metricsFile2.close()
 
 
+def compute_metrics():
+    colList = ['Name', 'Length', 'Surface', 'Volume', 'Hull Volume', 'Hull Ratio',
+                'Average Distance', 'CVD', 'Open Angle', 'Mean Curvature', 'Variance Curvature',
+                'Mean Gaussian', 'Variance Gaussian', 'Highest Curvature', 'Lowest Curvature',
+                'Lowest Gaussian', 'Highest Gaussian']
+    df = pd.DataFrame(columns=colList)
+    for (dirpath, _, filenames) in os.walk("toAnalyse/"):
+        for filename in filenames:
+            if filename != 'metrics.csv':
+                print(filename)
+                mesh = pymesh.load_mesh(os.path.join(dirpath, filename))
+                meanCurvature = calculate_mean_curvature(mesh)
+                gaussianCurvature = calculate_gaussian_curvature(mesh)
+                df2 = pd.DataFrame([{'Name': str(filename),
+                                     'Length': spine_length(mesh),
+                                     'Surface': mesh_surface(mesh),
+                                     'Volume': mesh_volume(mesh),
+                                     'Hull Volume': calculate_hull_volume(mesh),
+                                     'Hull Ratio': calculate_hull_ratio(mesh),
+                                     'Average Distance':average_distance(mesh),
+                                     'CVD': coefficient_of_variation_in_distance(mesh),
+                                     'Open Angle': open_angle(mesh),
+                                     'Mean Curvature': meanCurvature[0],
+                                     'Variance Curvature': meanCurvature[1],
+                                     'Mean Gaussian': gaussianCurvature[0],
+                                     'Variance Gaussian': gaussianCurvature[1],
+                                     'Highest Curvature': meanCurvature[2],
+                                     'Lowest Curvature': meanCurvature[3],
+                                     'Lowest Gaussian': gaussianCurvature[2],
+                                     'Highest Gaussian': gaussianCurvature[3]}])
+                df = df.append(df2, ignore_index=True)
+    df.to_csv('toAnalyse/metrics.csv')
+
+
 def neighbor_calc(mesh):
     neighborArray = np.zeros(int(mesh.vertices.size/3))
     for face in mesh.faces:
@@ -402,6 +444,16 @@ def find_fixed(mesh):
     print(f'edges : {np.shape(edges)}, faces : {np.shape(mesh.faces)}')
 
 
+def calculate_fixed(mesh):
+    edges = calculate_edges(mesh)
+    fixed = []
+    for edge in edges:
+        if np.sum(np.multiply(np.sum(mesh.faces == edge[0], axis=1), np.sum(mesh.faces == edge[1], axis=1))) < 2:
+            fixed.append(edge[0])
+            fixed.append(edge[1])
+    return fixed
+
+
 def compare_gravity_and_edges(mesh):
     edges = calculate_edges(mesh)
     fig = plt.figure()
@@ -419,7 +471,7 @@ def compare_gravity_and_edges(mesh):
             zs = [mesh.vertices[edge[0], 2], mesh.vertices[edge[1], 2]]
             plt.plot(xs, ys, zs, color='red')
 
-    # plt.show()
+    plt.show()
     # fixed = np.unique(fixed)
     # print(np.shape(mesh.vertices[fixed]))
     # x, y, z = np.mean(mesh.vertices[fixed][:, 0]), np.mean(mesh.vertices[fixed][:, 1]), np.mean(mesh.vertices[fixed][:, 2])
@@ -430,12 +482,180 @@ def compare_gravity_and_edges(mesh):
     # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(mesh.vertices, 'X', 'Y', "Z", 'Spine in pixel', [x, y, z], find_spine_base_center(mesh))
 
 
+def plot_number_of_nodes(mesh):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    i = np.linspace(0, mesh.num_vertices, mesh.num_vertices, endpoint=False)
+    x = mesh.vertices[:, 0]
+    y = mesh.vertices[:, 1]
+    z = mesh.vertices[:, 2]
+    # pos = np.zeros((len(i), 3))
+    for w in range(np.shape(x)[0]):
+        # print(x[w], y[w], z[w], int(i[w]))
+        ax.text(x[w], y[w], z[w], int(i[w]), None)
+
+    # print(len(x), len(y), len(z), len(i), np.shape(pos))
+    # ax.text(x, y, z, i, pos)
+    ax.set_xlim(np.min(mesh.vertices[:, 0]), np.max(mesh.vertices[:, 0]))
+    ax.set_ylim(np.min(mesh.vertices[:, 1]), np.max(mesh.vertices[:, 1]))
+    ax.set_zlim(np.min(mesh.vertices[:, 2]), np.max(mesh.vertices[:, 2]))
+    plt.show()
+
+
+def plotly_number_of_nodes(mesh):
+    fig = go.Figure()
+    i = np.linspace(0, mesh.num_vertices, mesh.num_vertices, endpoint=False)
+    # print(i)
+    # w = []
+    # for j in i:
+    #     print(j)
+    #     w.append(int(i[int(j)]))
+    fig.add_trace(go.Scatter3d(
+        x=mesh.vertices[:, 0],
+        y=mesh.vertices[:, 1],
+        z=mesh.vertices[:, 2],
+        hovertext=i,
+        mode='markers',
+        # text=i
+    ))
+    fig.show()
+
+
+def plotly_number_of_nodes_and_fixed(mesh):
+    fig = go.Figure()
+    fixed = np.unique(calculate_fixed(mesh))
+    fixedVertices = mesh.vertices[fixed]
+    i = np.linspace(0, mesh.num_vertices, mesh.num_vertices, endpoint=False)
+    # print(i)
+    # w = []
+    # for j in i:
+    #     print(j)
+    #     w.append(int(i[int(j)]))
+    fig.add_trace(go.Scatter3d(
+        x=mesh.vertices[:, 0],
+        y=mesh.vertices[:, 1],
+        z=mesh.vertices[:, 2],
+        hovertext=i,
+        mode='markers',
+        # text=i
+    ))
+    fig.add_trace(go.Scatter3d(
+        x=fixedVertices[:, 0],
+        y=fixedVertices[:, 1],
+        z=fixedVertices[:, 2],
+        # hovertext=i,
+        mode='markers',
+        marker=dict(color='red'),
+    ))
+    fig.show()
+
+
+def calculate_PCA():
+    df = pd.read_csv('toAnalyse/metrics.csv')
+    features = list(df.columns)[2:]
+    x = df.loc[:, features].values
+    # print(x)
+    # y = df.loc[:, ['target']].values
+    x = StandardScaler().fit_transform(x)
+    # print(x)
+
+    pca = PCA(n_components=2)
+    principalComponents = pca.fit_transform(x)
+    principalDf = pd.DataFrame(data=principalComponents
+                               , columns=['principal component 1', 'principal component 2'])
+    finalDf = pd.concat([principalDf, df[['Name']]], axis=1)
+
+    # print(df['Name'])
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(1, 1, 1)
+    ax.set_xlabel('Principal Component 1', fontsize=15)
+    ax.set_ylabel('Principal Component 2', fontsize=15)
+    ax.set_title('2 component PCA', fontsize=20)
+    targets = df['Name'].values
+    viridis = cm.get_cmap('viridis', 12)
+    colors = viridis(np.linspace(0, 1, len(targets)))
+    for target, color in zip(targets, colors):
+        # print(tuple(color))
+        indicesToKeep = finalDf['Name'] == target
+        ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
+                   finalDf.loc[indicesToKeep, 'principal component 2'],
+                   c=tuple(color),
+                   s=50)
+    ax.legend(targets)
+    ax.grid()
+
+    plt.title(pca.explained_variance_ratio_)
+
+    plt.show()
+    # print(features)
+    # features = []
+    # print(df)
+
+def calculate_PCA3D():
+    df = pd.read_csv('toAnalyse/metrics.csv')
+    features = list(df.columns)[2:]
+    x = df.loc[:, features].values
+    print(df)
+    # y = df.loc[:, ['target']].values
+    x = StandardScaler().fit_transform(x)
+    # print(x)
+
+    pca = PCA(n_components=3)
+    principalComponents = pca.fit_transform(x)
+    principalDf = pd.DataFrame(data=principalComponents
+                               , columns=['principal component 1', 'principal component 2', 'principal component 3'])
+    finalDf = pd.concat([principalDf, df[['Name']]], axis=1)
+
+    # print(df['Name'])
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    # ax = fig.add_subplot(1, 1, 1)
+    ax.set_xlabel('Principal Component 1', fontsize=15)
+    ax.set_ylabel('Principal Component 2', fontsize=15)
+    ax.set_zlabel('Principal Component 3', fontsize=15)
+    ax.set_title('3 component PCA', fontsize=20)
+    targets = df['Name'].values
+    viridis = cm.get_cmap('viridis', 12)
+    colors = viridis(np.linspace(0, 1, len(targets)))
+    for target, color in zip(targets, colors):
+        # print(tuple(color))
+        indicesToKeep = finalDf['Name'] == target
+        ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
+                   finalDf.loc[indicesToKeep, 'principal component 2'],
+                   finalDf.loc[indicesToKeep, 'principal component 3'],
+                   c=tuple(color),
+                   s=50)
+    ax.legend(targets)
+    ax.grid()
+
+    # plt.title(f'PCA1 : {round(pca.explained_variance_ratio_[0]*100, 1)}%, '
+    #           f'PCA2 : {round(pca.explained_variance_ratio_[1]*100, 1)}%, '
+    #           f'PCA3 : {round(pca.explained_variance_ratio_[2]*100, 1)}%')
+
+    plt.title('Curvature')
+
+    plt.show()
+    # print(features)
+    # features = []
+    # print(df)
+
+
 if __name__ == "__main__":
     # Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
     # filename = askopenfilename()
     # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Segmentation/Reconstruction/spine255.ply'
-    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/optimisedMesh/mesh3.ply'
-    meshSpine = pymesh.load_mesh(filename)
+
+    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshes/' \
+    #            'deconvolved_spine_mesh_0_0.stl'
+
+    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshesCopy/spine_11_18_0.230566534914361.ply_optimisedMesh_1.stl'
+    # mesh = pymesh.load_mesh(filename)
+    # plotly_number_of_nodes_and_fixed(mesh)
+    # compute_metrics()
+    calculate_PCA3D()
+    # meshSpine = pymesh.load_mesh(file
+    # name)
+    # plotly_number_of_nodes_and_fixed(meshSpine)
 
     # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(m)
     # neighbor_calc(meshSpine)

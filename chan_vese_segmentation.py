@@ -17,23 +17,20 @@ from skimage import io
 
 np.set_printoptions(threshold=sys.maxsize)  # variable output
 
-falseMatrixActivation = 0
 
 def load_exif(filename):
     pass
 
 
-def filename_plan_segmentation(imagestack, filename):
-    imageStack = imagestack
+def filename_plan_segmentation(dirpath, filename):
+    print(f'Opening {filename}')
+    imageStack = io.imread(f'{dirpath}/{filename}')
     muDivision = np.linspace(0, 0.5, 15)
     lambda1Division = np.linspace(0, 4, 15)
     lambda2Division = np.linspace(0, 4, 15)
 
     zStack, width, length = np.shape(imageStack)
     maxImage = np.max(imageStack, axis=0)
-    # maxImage = np.max(np.delete(imageStack, 0, 3), axis=0)
-
-    # noColorPlan = rgb2gray(maxImage)
 
     mu_0 = 0.25
     delta_mu = 0.05
@@ -182,25 +179,28 @@ def filename_plan_segmentation(imagestack, filename):
                   'tolerance : {3:1.2e}, ''max iteration : {4:1.2e}, dt : {5}.'.format(mu, lambda1, lambda2, tol,
                                                                                        max_iter, dt))
             print(f'iterations {len(cv[2])}')
+            # imageStack[loopPosition] = np.invert(cv[0]) * plan
             imageStack[loopPosition] = cv[0] * plan
 
         loopPosition += 1
 
     # Treatment and export
 
-    segmentedImageName = f'segmentedImages/{filename}_segmentedImage.tif'
+    segmentedImageName = f'segmentedImages/{filename.split(".")[0]}_segmentedImage.tif'
     with skimage.external.tifffile.TiffWriter(segmentedImageName) as tif:
         for image in range(imageStack.shape[0]):
             tif.save(imageStack[image], compress=0)
-
     # skimage.io.imsave(segmentedImageName, imageStack)
 
     return imageStack
 
 
 if __name__ == "__main__":
-    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/images/Deconvolved_3.tif'
-    image = io.imread(filename)
-    filename = 'deconvolved'
-    filename_plan_segmentation(image, filename)
+    for (dirpath, _, filenames) in os.walk("images/"):
+        for filename in filenames:
+            filename_plan_segmentation(dirpath, filename)
+    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/images/Deconvolved_3.tif'
+    # image = io.imread(filename)
+    # filename = 'deconvolved'
+    # filename_plan_segmentation(image, filename)
 #
