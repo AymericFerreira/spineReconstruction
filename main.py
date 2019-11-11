@@ -4,5 +4,7 @@ from marching_cube_reconstruction import *
 
 
 if __name__ == "__main__":
-    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Reconstruction/images/image.tiff'
-    chan_vese_segmentation()
+    for (dirpath, _, filenames) in os.walk("images/"):
+        for filename in filenames:
+            # filename_plan_segmentation(dirpath, filename)
+            automatic_marching_cube_reconstruction(dirpath, filename)
