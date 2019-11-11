@@ -2,8 +2,31 @@ import numpy as np
 import networkx as nx
 import pymesh
 import IO.meshIO as meshIO
+import trimesh
 
 note = [0, 0, 0]
+
+
+def pymesh_to_trimesh(mesh):
+    """
+        A function to convert pymesh object to trimesh.
+        Trimesh has some built-in functions very useful to split mesh into submeshes
+
+        :param mesh: Pymesh Mesh object
+        :return: mesh : Trimesh Mesh object
+    """
+    return trimesh.Trimesh(vertices=mesh.vertices, faces=mesh.faces)
+
+
+def trimesh_to_pymesh(mesh):
+    """
+        A function to convert trimesh object to pymesh.
+        Pymesh has some built-in functions very useful to count total number of vertices and to optimise mesh.
+
+        :param mesh: Trimesh Mesh object
+        :return: mesh : Pymesh Mesh object
+        """
+    return pymesh.form_mesh(vertices=mesh.vertices, faces=mesh.faces)
 
 
 def remove_small_meshes(mesh):
@@ -23,6 +46,39 @@ def remove_small_meshes(mesh):
     return isolatedMeshesList
 
 
+def new_remove_small_meshes(mesh, tolerance=5):
+    meshT = pymesh_to_trimesh(mesh)
+    meshList = meshT.split()
+    biggestMeshesList = []
+    for subMesh in meshList:
+        if len(subMesh.vertices) > tolerance /100 * len(meshT.vertices):
+            biggestMeshesList.append(subMesh)
+    if biggestMeshesList is not None:
+        if len(biggestMeshesList) > 1:
+            finalMesh = trimesh.util.concatenate(biggestMeshesList)
+        else:
+            finalMesh = biggestMeshesList
+        return trimesh_to_pymesh(finalMesh)
+
+    else:
+        print('Mesh seems broken')
+        return mesh
+
+
+def remove_noise(mesh, tolerance=5):
+    meshT = pymesh_to_trimesh(mesh)
+    meshList = meshT.split()
+    biggestMeshesList = []
+    for subMesh in meshList:
+        if len(subMesh.vertices) > tolerance / 100 * len(meshT.vertices):
+            biggestMeshesList.append(subMesh)
+    if biggestMeshesList is not None:
+        return biggestMeshesList
+    else:
+        print('Mesh seems broken')
+        return [mesh]
+
+
 def recreate_meshes(nodeList, mesh):
     # todo : refactoring
 
@@ -40,6 +96,15 @@ def recreate_meshes(nodeList, mesh):
 
 
 def is_mesh_broken(mesh, meshCopy):
+    """
+        Easy way to see if the detail settings broke the mesh or not. It can happens with highly details settings.
+        :param mesh: Pymesh Mesh object
+        Mesh after optimisation
+        :param meshCopy: Pymesh Mesh object
+        Mesh before optimisation
+        :return: boolean
+        if True the mesh is broken, if False the mesh isn't broken
+    """
     if mesh.vertices.size > 0:
         if np.max(get_size_of_meshes(create_graph(mesh))) < 0.1 * np.max(get_size_of_meshes(create_graph(meshCopy))):
             return True
@@ -75,6 +140,14 @@ def count_number_of_meshes(mesh):
 
 
 def fix_meshes(mesh, detail="normal"):
+    """
+    A pipeline to optimise and fix mesh. # todo : More information about each steps
+    :param mesh: Pymesh Mesh object to optimise
+    :param detail: string 'high', 'normal' or 'low' ('normal' as default)
+    Settings to choose the targeting minimum length of edges
+    :return: Pymesh Mesh object
+    An optimised mesh or not depending on detail settings and mesh quality
+    """
     meshCopy = mesh
 
     # copy/pasta of pymesh script fix_mesh from qnzhou, see pymesh on GitHub
