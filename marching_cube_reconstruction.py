@@ -57,7 +57,7 @@ def construct_and_optimise_from_lewiner(imageStack, spacingData, levelThreshold,
 
         :return:
         An optimised pymesh Mesh object
-        """
+    """
     mesh = optimise.fix_meshes(construct_mesh_from_lewiner(imageStack, spacingData, levelThreshold))
     mesh = optimise.new_remove_small_meshes(mesh, tolerance=tol)
     return mesh
@@ -75,10 +75,11 @@ def verify_mesh_stability(mesh):
 
 def automatic_marching_cube_reconstruction(dirpath, filename):
     """
-
-    :param dirpath:
-    :param filename:
-    :return:
+        An automatic routine to convert image stacks to 3D triangular meshes.
+        :param dirpath: The full directory path where the file(s) are stored,
+        ex : /home/user/Documents/spineReconstruction/Images/ or C:/Users/Documents/spineReconstruction/Images
+        :param filename: The name of the image stack file in tiff, ex : stackimage.tiff or stackimage.tif
+        :return:
     """
     print(f'Computing : {filename.strip(".tif").split("/")[-1]}_mesh')
     imageStack = io.imread(f'{dirpath}/{filename}')
@@ -106,10 +107,8 @@ def automatic_marching_cube_reconstruction(dirpath, filename):
                 stability2 = False
                 # neck and head are dissociated
                 while stability2 is False:
-                    # levelThreshold -= levelThreshold/10
                     levelThreshold -= 1
                     mesh2 = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
-                    # meshL = optimise.remove_noise(mesh2)
                     meshL = optimise.remove_noise(mesh2)
                     if len(meshL) > 1:
                         if (len(meshL[0].vertices) + len(meshL[1].vertices)) / len(mesh2.vertices) > 0.9 \
@@ -118,22 +117,15 @@ def automatic_marching_cube_reconstruction(dirpath, filename):
                         else:
                             levelThreshold -= levelThreshold/10
                             break
-                            # mesh2 = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
-                            # mesh2 = optimise.remove_noise(mesh2)
                     else:
                         levelThreshold -= levelThreshold / 10
                         break
-                        # mesh2 = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
-                        # mesh2 = optimise.remove_noise(mesh2)
             else:
                 levelThreshold += 5
         else:
             levelThreshold += 5
             # Look for narrow reconstruction
     mesh3 = construct_and_optimise_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
-    # meshList = meshList[meshList > 0.01 * np.sum(meshList)] # this line remove 'noise'
-
-    # mesh3 = optimise.fix_meshes(mesh2)
     print(f'Saving mesh with level threshold : {levelThreshold} in optimisedMeshes')
     save_mesh(f'optimisedMeshes/{filename.split(".")[0]}_{levelThreshold}_optimised.stl', mesh3)
 
