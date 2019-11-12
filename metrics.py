@@ -5,13 +5,11 @@ matplotlib.use("TkAgg")
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
-
 import plotly.graph_objects as go
 import os
 import pandas as pd
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-
 from IO.draw import *
 
 
@@ -87,12 +85,12 @@ def tetrahedron_calc_volume(vertex1, vertex2, vertex3, vertex4):
 
 
 def calculate_distance(vertex1, vertex2):
-    dist = np.sqrt(pow(vertex1[0]-vertex2[0], 2)+pow(vertex1[1]-vertex2[1], 2)+pow(vertex1[2]-vertex2[2], 2))
+    dist = np.sqrt(pow(vertex1[0] - vertex2[0], 2) + pow(vertex1[1] - vertex2[1], 2) + pow(vertex1[2] - vertex2[2], 2))
     return dist
 
 
 def calculate_vector(vertex1, vertex2):
-    vector = np.array([vertex1[0]-vertex2[0], vertex1[1]-vertex2[1], vertex1[2]-vertex2[2]])
+    vector = np.array([vertex1[0] - vertex2[0], vertex1[1] - vertex2[1], vertex1[2] - vertex2[2]])
     return vector
 
 
@@ -104,7 +102,7 @@ def spine_length(mesh):
 
     length = np.array(length)
     length[::-1].sort()
-    listOfLengths = range(0, int(0.05*np.size(length)))
+    listOfLengths = range(0, int(0.05 * np.size(length)))
     spineLength = np.mean(length[listOfLengths])
 
     return spineLength
@@ -131,7 +129,7 @@ def coefficient_of_variation_in_distance(mesh):
     length = np.array(length)
     averageDistance = np.mean(length)
     std = np.std(length)
-    coefficientOfVariationInDistance = std/averageDistance
+    coefficientOfVariationInDistance = std / averageDistance
 
     return coefficientOfVariationInDistance
 
@@ -222,8 +220,6 @@ def calculate_mean_curvature(mesh):
 
 
 def mesh_treatment(mesh):
-    # Calculation of node connectivity
-
     vertexConnectivity = calculate_vertex_connectivity(mesh)
     result = np.where(vertexConnectivity == 0)
 
@@ -231,30 +227,12 @@ def mesh_treatment(mesh):
     for node in result:
         meshVertices = np.delete(meshVertices, node, 0)
 
-    # firstTreatment = pymesh.meshio.form_mesh(meshVertices, mesh.faces)
-    # vertexConnectivity = calculate_vertex_connectivity(firstTreatment)
-    # result2 = np.where(vertexConnectivity == 1)
-
-    # meshVertices2 = firstTreatment.vertices
-
-    # for node2 in result2:
-    #     meshVertices2 = np.delete(meshVertices2, node2, 0)
-    #     #print('ok')
-
     newMesh = pymesh.meshio.form_mesh(meshVertices, mesh.faces)
-    # if calculate_vertex_connectivity(newMesh).any() == 0 or calculate_vertex_connectivity(newMesh).any() == 1:
-    #     mesh_treatment(newMesh)
-    # else:
     return newMesh
 
 
 def find_spine_base_center2(mesh):
     listOfNeighbors = np.bincount(mesh.faces.ravel())
-    # neighborArray = np.zeros(int(mesh.vertices.size / 3))
-    # for face in mesh.faces:
-    #     neighborArray[face[0]] += 1
-    #     neighborArray[face[1]] += 1
-    #     neighborArray[face[2]] += 1
 
     verticesAndNeighbors = np.column_stack((mesh.vertices, np.transpose(listOfNeighbors)))
     lessConnectedVertices = np.where(verticesAndNeighbors[:, 3] <= 3)
@@ -280,9 +258,9 @@ def get_mesh_valence(mesh):
 
 
 def find_x_y_z_length(mesh):
-    X = np.amax(mesh.vertices[0])-np.amin(mesh.vertices[0])
-    Y = np.amax(mesh.vertices[1])-np.amin(mesh.vertices[1])
-    Z = np.amax(mesh.vertices[2])-np.amin(mesh.vertices[2])
+    X = np.amax(mesh.vertices[0]) - np.amin(mesh.vertices[0])
+    Y = np.amax(mesh.vertices[1]) - np.amin(mesh.vertices[1])
+    Z = np.amax(mesh.vertices[2]) - np.amin(mesh.vertices[2])
     return [X, Y, Z]
 
 
@@ -357,15 +335,19 @@ def calculate_metrics(mesh):
 
 
 def compute_metrics():
+    """
+        Calculate all metrics of all meshes in folder toAnalyse/, put them into a dataframes object
+         and save it as metrics.csv in toAnalyse folders
+        :return:
+    """
     colList = ['Name', 'Length', 'Surface', 'Volume', 'Hull Volume', 'Hull Ratio',
-                'Average Distance', 'CVD', 'Open Angle', 'Mean Curvature', 'Variance Curvature',
-                'Mean Gaussian', 'Variance Gaussian', 'Highest Curvature', 'Lowest Curvature',
-                'Lowest Gaussian', 'Highest Gaussian']
+               'Average Distance', 'CVD', 'Open Angle', 'Mean Curvature', 'Variance Curvature',
+               'Mean Gaussian', 'Variance Gaussian', 'Highest Curvature', 'Lowest Curvature',
+               'Lowest Gaussian', 'Highest Gaussian']
     df = pd.DataFrame(columns=colList)
     for (dirpath, _, filenames) in os.walk("toAnalyse/"):
         for filename in filenames:
             if filename != 'metrics.csv':
-                print(filename)
                 mesh = pymesh.load_mesh(os.path.join(dirpath, filename))
                 meanCurvature = calculate_mean_curvature(mesh)
                 gaussianCurvature = calculate_gaussian_curvature(mesh)
@@ -375,7 +357,7 @@ def compute_metrics():
                                      'Volume': mesh_volume(mesh),
                                      'Hull Volume': calculate_hull_volume(mesh),
                                      'Hull Ratio': calculate_hull_ratio(mesh),
-                                     'Average Distance':average_distance(mesh),
+                                     'Average Distance': average_distance(mesh),
                                      'CVD': coefficient_of_variation_in_distance(mesh),
                                      'Open Angle': open_angle(mesh),
                                      'Mean Curvature': meanCurvature[0],
@@ -391,18 +373,16 @@ def compute_metrics():
 
 
 def neighbor_calc(mesh):
-    neighborArray = np.zeros(int(mesh.vertices.size/3))
+    neighborArray = np.zeros(int(mesh.vertices.size / 3))
     for face in mesh.faces:
-        neighborArray[face[0]] = neighborArray[face[0]]+1
-        neighborArray[face[1]] = neighborArray[face[1]]+1
-        neighborArray[face[2]] = neighborArray[face[2]]+1
+        neighborArray[face[0]] = neighborArray[face[0]] + 1
+        neighborArray[face[1]] = neighborArray[face[1]] + 1
+        neighborArray[face[2]] = neighborArray[face[2]] + 1
 
     result = np.column_stack((mesh.vertices, np.transpose(neighborArray)))
 
-    # plot_3d_scatter_with_color(result, 'X', 'Y', "Z", 'Number of neighbors')
     plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(result, 'X', 'Y', "Z", 'Spine in pixel',
                                                                      gravity_center(mesh), find_spine_base_center(mesh))
-    # plot_frequency(np.transpose(neighborArray), 'frequency', 'neighbor', "node")
     print(find_spine_base_center(mesh))
 
 
@@ -411,15 +391,15 @@ def neighbor_calc2(mesh):
 
     result = np.column_stack((mesh.vertices, np.transpose(neighborArray)))
 
-    # plot_3d_scatter_with_color(result, 'X', 'Y', "Z", 'title')
     plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(result, 'X', 'Y', "Z", 'Spine in pixel',
-                                                                     gravity_center(mesh), find_spine_base_center2(mesh))
+                                                                     gravity_center(mesh),
+                                                                     find_spine_base_center2(mesh))
     plot_frequency(np.transpose(neighborArray), 'frequency', 'neighbor', "node")
     print(find_spine_base_center2(mesh))
 
 
 def get_frequency2(mesh):
-    array = np.zeros(int(mesh.vertices.size/3))
+    array = np.zeros(int(mesh.vertices.size / 3))
     for face in mesh.faces:
         array[face[0]] = array[face[0]] + 1
         array[face[1]] = array[face[1]] + 1
@@ -431,6 +411,11 @@ def get_frequency2(mesh):
 
 
 def find_fixed(mesh):
+    """
+        Find the fixed points of a mesh by finding the less connected vertices
+        :param mesh:
+        :return:
+    """
     edges = calculate_edges(mesh)
     fixed = []
     for edge in edges:
@@ -438,13 +423,15 @@ def find_fixed(mesh):
             fixed.append(edge[0])
             fixed.append(edge[1])
 
-    print(np.unique(fixed))
     plot_3d_scatter_fixed(mesh.vertices, fixed, 'X', 'Y', "Z", 'Spine in pixel')
-    #     if edge in mesh.faces:
-    print(f'edges : {np.shape(edges)}, faces : {np.shape(mesh.faces)}')
 
 
 def calculate_fixed(mesh):
+    """
+        Find the fixed points of a mesh by finding the less connected edges
+        :param mesh:
+        :return:
+    """
     edges = calculate_edges(mesh)
     fixed = []
     for edge in edges:
@@ -455,11 +442,15 @@ def calculate_fixed(mesh):
 
 
 def compare_gravity_and_edges(mesh):
+    """
+        Compare the results of gravity center computed via mass center (mean of all vertices) and mean
+        :param mesh: a pymesh mesh object
+        :return:
+    """
     edges = calculate_edges(mesh)
     fig = plt.figure()
     scatterPlot = fig.add_subplot(111, projection='3d')
 
-    # p = scatterPlot.scatter(array[:, 0], array[:, 1], array[:, 2], c=array[:, 3], cmap='Set1', alpha=0.75)
     scatterPlot.scatter(mesh.vertices[:, 0], mesh.vertices[:, 1], mesh.vertices[:, 2], alpha=0.75)
     fixed = []
     for edge in edges:
@@ -472,14 +463,6 @@ def compare_gravity_and_edges(mesh):
             plt.plot(xs, ys, zs, color='red')
 
     plt.show()
-    # fixed = np.unique(fixed)
-    # print(np.shape(mesh.vertices[fixed]))
-    # x, y, z = np.mean(mesh.vertices[fixed][:, 0]), np.mean(mesh.vertices[fixed][:, 1]), np.mean(mesh.vertices[fixed][:, 2])
-    # print(f'edges : {x}, {y}, {z}')
-    # print(find_spine_base_center2(mesh))
-    # print(find_spine_base_center(mesh))
-    #
-    # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(mesh.vertices, 'X', 'Y', "Z", 'Spine in pixel', [x, y, z], find_spine_base_center(mesh))
 
 
 def plot_number_of_nodes(mesh):
@@ -489,13 +472,9 @@ def plot_number_of_nodes(mesh):
     x = mesh.vertices[:, 0]
     y = mesh.vertices[:, 1]
     z = mesh.vertices[:, 2]
-    # pos = np.zeros((len(i), 3))
     for w in range(np.shape(x)[0]):
-        # print(x[w], y[w], z[w], int(i[w]))
         ax.text(x[w], y[w], z[w], int(i[w]), None)
 
-    # print(len(x), len(y), len(z), len(i), np.shape(pos))
-    # ax.text(x, y, z, i, pos)
     ax.set_xlim(np.min(mesh.vertices[:, 0]), np.max(mesh.vertices[:, 0]))
     ax.set_ylim(np.min(mesh.vertices[:, 1]), np.max(mesh.vertices[:, 1]))
     ax.set_zlim(np.min(mesh.vertices[:, 2]), np.max(mesh.vertices[:, 2]))
@@ -503,13 +482,14 @@ def plot_number_of_nodes(mesh):
 
 
 def plotly_number_of_nodes(mesh):
+    """
+        Plot all vertices of a mesh and show them via plotly with blue dots. Plotly is far better than matplotlib
+        when you have a lot of points to deal with.
+        :param mesh: a pymesh Mesh object
+        :return:
+    """
     fig = go.Figure()
     i = np.linspace(0, mesh.num_vertices, mesh.num_vertices, endpoint=False)
-    # print(i)
-    # w = []
-    # for j in i:
-    #     print(j)
-    #     w.append(int(i[int(j)]))
     fig.add_trace(go.Scatter3d(
         x=mesh.vertices[:, 0],
         y=mesh.vertices[:, 1],
@@ -522,6 +502,13 @@ def plotly_number_of_nodes(mesh):
 
 
 def plotly_number_of_nodes_and_fixed(mesh):
+    """
+        Plot all vertices of a mesh and show them via plotly with blue dots. Plotly is far better than matplotlib
+        when you have a lot of points to deal with. Also calculate "fixed" points by finding less connected vertices
+        and show them in red.
+        :param mesh: a pymesh Mesh object
+        :return:
+    """
     fig = go.Figure()
     fixed = np.unique(calculate_fixed(mesh))
     fixedVertices = mesh.vertices[fixed]
@@ -551,13 +538,15 @@ def plotly_number_of_nodes_and_fixed(mesh):
 
 
 def calculate_PCA():
+    """
+        Compute PCA analysis with the best 2 dimensions and show the results in 2D with the percentage of information
+        in the best two dimensions based on file toAnalyse/metrics.csv
+        :return:
+    """
     df = pd.read_csv('toAnalyse/metrics.csv')
     features = list(df.columns)[2:]
     x = df.loc[:, features].values
-    # print(x)
-    # y = df.loc[:, ['target']].values
     x = StandardScaler().fit_transform(x)
-    # print(x)
 
     pca = PCA(n_components=2)
     principalComponents = pca.fit_transform(x)
@@ -565,7 +554,6 @@ def calculate_PCA():
                                , columns=['principal component 1', 'principal component 2'])
     finalDf = pd.concat([principalDf, df[['Name']]], axis=1)
 
-    # print(df['Name'])
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
     ax.set_xlabel('Principal Component 1', fontsize=15)
@@ -587,18 +575,18 @@ def calculate_PCA():
     plt.title(pca.explained_variance_ratio_)
 
     plt.show()
-    # print(features)
-    # features = []
-    # print(df)
+
 
 def calculate_PCA3D():
+    """
+        Compute PCA analysis with the best 3 dimensions and show the results in 3D with the percentage of information
+        in the best three dimensions based on file toAnalyse/metrics.csv
+        :return:
+        """
     df = pd.read_csv('toAnalyse/metrics.csv')
     features = list(df.columns)[2:]
     x = df.loc[:, features].values
-    print(df)
-    # y = df.loc[:, ['target']].values
     x = StandardScaler().fit_transform(x)
-    # print(x)
 
     pca = PCA(n_components=3)
     principalComponents = pca.fit_transform(x)
@@ -606,10 +594,8 @@ def calculate_PCA3D():
                                , columns=['principal component 1', 'principal component 2', 'principal component 3'])
     finalDf = pd.concat([principalDf, df[['Name']]], axis=1)
 
-    # print(df['Name'])
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(111, projection='3d')
-    # ax = fig.add_subplot(1, 1, 1)
     ax.set_xlabel('Principal Component 1', fontsize=15)
     ax.set_ylabel('Principal Component 2', fontsize=15)
     ax.set_zlabel('Principal Component 3', fontsize=15)
@@ -618,7 +604,6 @@ def calculate_PCA3D():
     viridis = cm.get_cmap('viridis', 12)
     colors = viridis(np.linspace(0, 1, len(targets)))
     for target, color in zip(targets, colors):
-        # print(tuple(color))
         indicesToKeep = finalDf['Name'] == target
         ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1'],
                    finalDf.loc[indicesToKeep, 'principal component 2'],
@@ -628,33 +613,26 @@ def calculate_PCA3D():
     ax.legend(targets)
     ax.grid()
 
-    # plt.title(f'PCA1 : {round(pca.explained_variance_ratio_[0]*100, 1)}%, '
-    #           f'PCA2 : {round(pca.explained_variance_ratio_[1]*100, 1)}%, '
-    #           f'PCA3 : {round(pca.explained_variance_ratio_[2]*100, 1)}%')
-
-    plt.title('Curvature')
+    plt.title(f'PCA1 : {round(pca.explained_variance_ratio_[0] * 100, 1)}%, '
+              f'PCA2 : {round(pca.explained_variance_ratio_[1] * 100, 1)}%, '
+              f'PCA3 : {round(pca.explained_variance_ratio_[2] * 100, 1)}%')
 
     plt.show()
-    # print(features)
-    # features = []
-    # print(df)
 
 
 if __name__ == "__main__":
-    # Tk().withdraw()  # we don't want a full GUI, so keep the root window from appearing
+    # messy exemples of commands
     # filename = askopenfilename()
     # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/Segmentation/Reconstruction/spine255.ply'
 
     # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshes/' \
     #            'deconvolved_spine_mesh_0_0.stl'
 
-    # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshesCopy/spine_11_18_0.230566534914361.ply_optimisedMesh_1.stl'
     # mesh = pymesh.load_mesh(filename)
     # plotly_number_of_nodes_and_fixed(mesh)
     # compute_metrics()
     calculate_PCA3D()
-    # meshSpine = pymesh.load_mesh(file
-    # name)
+    # meshSpine = pymesh.load_mesh(filename)
     # plotly_number_of_nodes_and_fixed(meshSpine)
 
     # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(m)
