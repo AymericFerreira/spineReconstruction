@@ -4,8 +4,6 @@ import pymesh
 import IO.meshIO as meshIO
 import trimesh
 
-note = [0, 0, 0]
-
 
 def pymesh_to_trimesh(mesh):
     """
@@ -47,18 +45,24 @@ def remove_small_meshes(mesh):
 
 
 def new_remove_small_meshes(mesh, tolerance=5):
+    """
+        Find all submeshes in a Pymesh Mesh object and remove small meshes based on tolerance in tolerance% (default
+        5%). The mesh will be convert to a Trimesh Mesh object to use .split() built-in function to find all
+        submeshes based on graph theory. Then we will remove all meshes under the tolerance threshold based on number
+        of vertices. If the submesh contains less than 5% of total it will be remove. If not, all submeshes will be
+        concatenate into one object. Then, the mesh will be converted back to Pymesh Mesh object.
+        :param mesh: Pymesh Mesh object
+        :param tolerance:
+        :return: Pymesh Mesh object
+    """
     meshT = pymesh_to_trimesh(mesh)
     meshT.split()
     biggestMeshesList = []
     if meshT is list:
         for subMesh in meshT:
             if len(subMesh.vertices) > tolerance /100 * len(meshT.vertices):
-                print(len(subMesh.vertices), len(meshT.vertices))
                 biggestMeshesList.append(subMesh)
         if biggestMeshesList is not []:
-            print(biggestMeshesList)
-            for bigSubMesh in biggestMeshesList:
-                print(len(bigSubMesh.vertices))
             if len(biggestMeshesList) > 1:
                 finalMesh = trimesh.util.concatenate(biggestMeshesList)
             else:
@@ -70,6 +74,7 @@ def new_remove_small_meshes(mesh, tolerance=5):
             return mesh
     else:
         return mesh
+
 
 def remove_noise(mesh, tolerance=5):
     meshT = pymesh_to_trimesh(mesh)
