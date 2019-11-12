@@ -41,7 +41,7 @@ packaging==19.2
 pandas==0.25.2
 pathos==0.2.5
 piexif==1.1.2
-Pillow==6.0.0
+Pillow==6.2.0
 plotly==4.1.1
 pluggy==0.13.0
 pox==0.2.7
