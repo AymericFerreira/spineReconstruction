@@ -193,8 +193,8 @@ def calculate_gaussian_curvature(mesh):
     meanGaussianCurvature = np.mean(gaussianCurvature)
     varianceGaussianCurvature = np.var(gaussianCurvature)
     sortGaussianCurvature = np.sort(gaussianCurvature)
-    lowerGaussianCurvature = np.mean(sortGaussianCurvature[0:round(0.2 * gaussianCurvature.size)])
-    higherGaussianCurvature = np.mean(sortGaussianCurvature[round(0.8 * gaussianCurvature.size):gaussianCurvature.size])
+    lowerGaussianCurvature = np.mean(sortGaussianCurvature[0:round(0.05 * gaussianCurvature.size)])
+    higherGaussianCurvature = np.mean(sortGaussianCurvature[round(0.95 * gaussianCurvature.size):gaussianCurvature.size])
     return [meanGaussianCurvature, varianceGaussianCurvature, lowerGaussianCurvature, higherGaussianCurvature]
 
 
@@ -214,8 +214,8 @@ def calculate_mean_curvature(mesh):
     meanMeanCurvature = np.mean(meanCurvature)
     varianceMeanCurvature = np.var(meanCurvature)
     sortMeanCurvature = np.sort(meanCurvature)
-    lowerMeanCurvature = np.mean(sortMeanCurvature[0:round(0.2 * meanCurvature.size)])
-    higherMeanCurvature = np.mean(sortMeanCurvature[round(0.8 * meanCurvature.size):meanCurvature.size])
+    lowerMeanCurvature = np.mean(sortMeanCurvature[0:round(0.05 * meanCurvature.size)])
+    higherMeanCurvature = np.mean(sortMeanCurvature[round(0.95 * meanCurvature.size):meanCurvature.size])
     return [meanMeanCurvature, varianceMeanCurvature, lowerMeanCurvature, higherMeanCurvature]
 
 
@@ -337,7 +337,7 @@ def calculate_metrics(mesh):
 def compute_metrics():
     """
         Calculate all metrics of all meshes in folder toAnalyse/, put them into a dataframes object
-         and save it as metrics.csv in toAnalyse folders
+         and save it as metrics.csv in toAnalyse folder
         :return:
     """
     colList = ['Name', 'Length', 'Surface', 'Volume', 'Hull Volume', 'Hull Ratio',
@@ -628,17 +628,21 @@ if __name__ == "__main__":
     # filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshes/' \
     #            'deconvolved_spine_mesh_0_0.stl'
 
-    # mesh = pymesh.load_mesh(filename)
+    filename = '/mnt/4EB2FF89256EC207/PycharmProjects/spineReconstruction/optimisedMeshes/' \
+               'Slice2_spine6_new_9.0_optimised.stl'
+
+    mesh = pymesh.load_mesh(filename)
     # plotly_number_of_nodes_and_fixed(mesh)
     # compute_metrics()
-    calculate_PCA3D()
+    # calculate_PCA3D()
     # meshSpine = pymesh.load_mesh(filename)
     # plotly_number_of_nodes_and_fixed(meshSpine)
 
     # plot_3d_scatter_with_color_and_gravity_center_and_gravity_median(m)
     # neighbor_calc(meshSpine)
-    # compare_gravity_and_edges(meshSpine)
-    # find_fixed(meshSpine)
+    # compare_gravity_and_edges(mesh)
+    find_fixed(mesh)
+    calculate_fixed(mesh)
     # print(calculate_edges(meshSpine))
     # neighbor_calc(meshSpine)
     # find_spine_base_center(meshSpine)
