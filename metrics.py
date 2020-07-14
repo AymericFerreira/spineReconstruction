@@ -19,19 +19,25 @@ def center_mesh(mesh):
     centeredVertices[:, 0] = mesh.vertices[:, 0] - gravity_center(mesh)[0]
     centeredVertices[:, 1] = mesh.vertices[:, 1] - gravity_center(mesh)[1]
     centeredVertices[:, 2] = mesh.vertices[:, 2] - gravity_center(mesh)[2]
-    centeredMesh = pymesh.meshio.form_mesh(centeredVertices, mesh.faces)
-
-    return centeredMesh
+    return pymesh.meshio.form_mesh(centeredVertices, mesh.faces)
 
 
 def gravity_center(mesh):
-    gravityCenter = np.array([np.mean(mesh.vertices[:, 0]), np.mean(mesh.vertices[:, 1]), np.mean(mesh.vertices[:, 2])])
-    return gravityCenter
+    return np.array(
+        [
+            np.mean(mesh.vertices[:, 0]),
+            np.mean(mesh.vertices[:, 1]),
+            np.mean(mesh.vertices[:, 2]),
+        ]
+    )
 
 
 def gravity_median(mesh):
-    gravityMean = [np.median(mesh.vertices[:, 0]), np.median(mesh.vertices[:, 1]), np.median(mesh.vertices[:, 2])]
-    return gravityMean
+    return [
+        np.median(mesh.vertices[:, 0]),
+        np.median(mesh.vertices[:, 1]),
+        np.median(mesh.vertices[:, 2]),
+    ]
 
 
 def mesh_surface(mesh):
@@ -85,13 +91,21 @@ def tetrahedron_calc_volume(vertex1, vertex2, vertex3, vertex4):
 
 
 def calculate_distance(vertex1, vertex2):
-    dist = np.sqrt(pow(vertex1[0] - vertex2[0], 2) + pow(vertex1[1] - vertex2[1], 2) + pow(vertex1[2] - vertex2[2], 2))
-    return dist
+    return np.sqrt(
+        pow(vertex1[0] - vertex2[0], 2)
+        + pow(vertex1[1] - vertex2[1], 2)
+        + pow(vertex1[2] - vertex2[2], 2)
+    )
 
 
 def calculate_vector(vertex1, vertex2):
-    vector = np.array([vertex1[0] - vertex2[0], vertex1[1] - vertex2[1], vertex1[2] - vertex2[2]])
-    return vector
+    return np.array(
+        [
+            vertex1[0] - vertex2[0],
+            vertex1[1] - vertex2[1],
+            vertex1[2] - vertex2[2],
+        ]
+    )
 
 
 def spine_length(mesh):
@@ -102,10 +116,8 @@ def spine_length(mesh):
 
     length = np.array(length)
     length[::-1].sort()
-    listOfLengths = range(0, int(0.05 * np.size(length)))
-    spineLength = np.mean(length[listOfLengths])
-
-    return spineLength
+    listOfLengths = range(int(0.05 * np.size(length)))
+    return np.mean(length[listOfLengths])
 
 
 def average_distance(mesh):
@@ -115,9 +127,7 @@ def average_distance(mesh):
         length.append(calculate_distance(vertice, spineBaseCenter))
 
     length = np.array(length)
-    averageDistance = np.mean(length)
-
-    return averageDistance
+    return np.mean(length)
 
 
 def coefficient_of_variation_in_distance(mesh):
@@ -129,9 +139,7 @@ def coefficient_of_variation_in_distance(mesh):
     length = np.array(length)
     averageDistance = np.mean(length)
     std = np.std(length)
-    coefficientOfVariationInDistance = std / averageDistance
-
-    return coefficientOfVariationInDistance
+    return std / averageDistance
 
 
 def open_angle(mesh):
@@ -153,9 +161,10 @@ def calculate_angle(point1, point2, point3):
 
     vector1 = calculate_vector(point1, point2)
     vector2 = calculate_vector(point3, point2)
-    angle = np.arccos(np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2)))
-
-    return angle
+    return np.arccos(
+        np.dot(vector1, vector2)
+        / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
+    )
 
 
 def calculate_edges(mesh):
@@ -170,15 +179,13 @@ def calculate_edges(mesh):
 
 def calculate_hull_volume(mesh):
     hullMesh = pymesh.convex_hull(mesh)
-    hullVolume = mesh_volume(hullMesh)
-    return hullVolume
+    return mesh_volume(hullMesh)
 
 
 def calculate_hull_ratio(mesh):
     hullVolume = calculate_hull_volume(mesh)
     meshVolume = mesh_volume(mesh)
-    CHR = (hullVolume - meshVolume) / meshVolume
-    return CHR
+    return (hullVolume - meshVolume) / meshVolume
 
 
 def calculate_gaussian_curvature(mesh):
@@ -227,8 +234,7 @@ def mesh_treatment(mesh):
     for node in result:
         meshVertices = np.delete(meshVertices, node, 0)
 
-    newMesh = pymesh.meshio.form_mesh(meshVertices, mesh.faces)
-    return newMesh
+    return pymesh.meshio.form_mesh(meshVertices, mesh.faces)
 
 
 def find_spine_base_center2(mesh):
@@ -237,9 +243,7 @@ def find_spine_base_center2(mesh):
     verticesAndNeighbors = np.column_stack((mesh.vertices, np.transpose(listOfNeighbors)))
     lessConnectedVertices = np.where(verticesAndNeighbors[:, 3] <= 3)
     [X, Y, Z] = np.mean(mesh.vertices[lessConnectedVertices], axis=0)
-    spine_base_center = [X, Y, Z]
-
-    return spine_base_center
+    return [X, Y, Z]
 
 
 def find_spine_base_center(mesh):
@@ -247,9 +251,7 @@ def find_spine_base_center(mesh):
     verticesAndNeighbors = np.column_stack((mesh.vertices, np.transpose(valence)))
     lessConnectedVertices = np.where(verticesAndNeighbors[:, 3] <= 3)
     [X, Y, Z] = np.mean(mesh.vertices[lessConnectedVertices], axis=0)
-    spine_base_center = [X, Y, Z]
-
-    return spine_base_center
+    return [X, Y, Z]
 
 
 def get_mesh_valence(mesh):

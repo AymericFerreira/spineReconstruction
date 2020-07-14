@@ -40,8 +40,7 @@ def remove_small_meshes(mesh):
     for meshNumber in range(len(meshList)):
         meshList[meshNumber] = list(meshList[meshNumber])
 
-    isolatedMeshesList = recreate_meshes(meshList, mesh)
-    return isolatedMeshesList
+    return recreate_meshes(meshList, mesh)
 
 
 def new_remove_small_meshes(mesh, tolerance=5):
@@ -57,8 +56,8 @@ def new_remove_small_meshes(mesh, tolerance=5):
     """
     meshT = pymesh_to_trimesh(mesh)
     meshT.split()
-    biggestMeshesList = []
     if meshT is list:
+        biggestMeshesList = []
         for subMesh in meshT:
             if len(subMesh.vertices) > tolerance /100 * len(meshT.vertices):
                 biggestMeshesList.append(subMesh)
@@ -95,7 +94,7 @@ def recreate_meshes(nodeList, mesh):
 
     isolatedMeshesList = []
 
-    for isolatedMeshes in range(len(nodeList)):
+    for _ in nodeList:
         to_keep = np.ones(mesh.num_vertices, dtype=bool)
         to_keep[nodeList[0]] = False  # all matching value become false
         to_keep = ~np.array(to_keep)  # True become False and vice-versa
@@ -117,10 +116,10 @@ def is_mesh_broken(mesh, meshCopy):
         if True the mesh is broken, if False the mesh isn't broken
     """
     if mesh.vertices.size > 0:
-        if np.max(get_size_of_meshes(create_graph(mesh))) < 0.1 * np.max(get_size_of_meshes(create_graph(meshCopy))):
-            return True
-        else:
-            return False
+        return np.max(get_size_of_meshes(create_graph(mesh))) < 0.1 * np.max(
+            get_size_of_meshes(create_graph(meshCopy))
+        )
+
     else:
         return True
 
@@ -135,15 +134,11 @@ def create_graph(mesh):
 
 
 def get_size_of_meshes(graph):
-    meshSize = [len(c) for c in nx.connected_components(graph)]
-    return meshSize
+    return [len(c) for c in nx.connected_components(graph)]
 
 
 def get_list_of_nodes_in_each_meshes(graph):
-    list_of_set = []
-    for subG in nx.connected_components(graph):
-        list_of_set.append(subG)
-    return list_of_set
+    return [subG for subG in nx.connected_components(graph)]
 
 
 def count_number_of_meshes(mesh):

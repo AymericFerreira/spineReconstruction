@@ -55,7 +55,7 @@ def enhance_image_head_neck():
 
 
 def remove_mean(img, factor=0.2, loop=10):
-    for loopCounter in range(loop):
+    for _ in range(loop):
         img = img - factor * np.mean(img)
         img[img < 0] = 0
     return img
@@ -64,7 +64,7 @@ def remove_mean(img, factor=0.2, loop=10):
 def remove_mean_and_save(img, factor=0.2, loop=10, filename=''):
     if filename is None:
         filename = f'Deconvolved_{loop}_img'
-    for loopCounter in range(loop):
+    for _ in range(loop):
         img = img - factor * np.mean(img)
         img[img < 0] = 0
     skimage.io.imsave(filename, img.astype(np.uint16))

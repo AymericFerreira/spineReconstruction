@@ -32,8 +32,7 @@ def construct_mesh_from_lewiner(imageStack, spacingData, levelThreshold):
                                                                       level=float(levelThreshold),
                                                                       spacing=spacingData,
                                                                       allow_degenerate=False)
-    mesh = form_mesh(vertices, faces)
-    return mesh
+    return form_mesh(vertices, faces)
 
 
 def construct_and_optimise_from_lewiner(imageStack, spacingData, levelThreshold, tol=5):
@@ -66,11 +65,13 @@ def construct_and_optimise_from_lewiner(imageStack, spacingData, levelThreshold,
 def verify_mesh_stability(mesh):
     meshList = optimise.get_size_of_meshes(optimise.create_graph(mesh))
     meshList.sort(reverse=True)
-    if len(meshList) > 1:
-        if (meshList[0] + meshList[1]) / np.sum(meshList) > 0.9 and meshList[0] / np.sum(meshList) < 0.8:
-            stability = False
-            print(f'Can"t recontruct this spine {filename}')
-    pass
+    if (
+        len(meshList) > 1
+        and (meshList[0] + meshList[1]) / np.sum(meshList) > 0.9
+        and meshList[0] / np.sum(meshList) < 0.8
+    ):
+        stability = False
+        print(f'Can"t recontruct this spine {filename}')
 
 
 def automatic_marching_cube_reconstruction(dirpath, filename):
@@ -91,7 +92,7 @@ def automatic_marching_cube_reconstruction(dirpath, filename):
     mesh = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
 
     # Todo : refactoring and cut into more functions
-    while stability is True:
+    while stability:
         if levelThreshold > 200:
             print('Image seems to be mostly noise, or resolution is super good. Stopping at levelTreshold 200')
             stability = False
@@ -106,15 +107,18 @@ def automatic_marching_cube_reconstruction(dirpath, filename):
                 stability = False
                 stability2 = False
                 # neck and head are dissociated
-                while stability2 is False:
+                while not stability2:
                     levelThreshold -= 1
                     mesh2 = construct_mesh_from_lewiner(imageStack, (zSpacing, 0.05, 0.05), levelThreshold)
                     meshL = optimise.remove_noise(mesh2)
                     if len(meshL) > 1:
-                        if (len(meshL[0].vertices) + len(meshL[1].vertices)) / len(mesh2.vertices) > 0.9 \
-                                and len(meshL[0].vertices) / len(mesh2.vertices) < 0.8:
-                            pass
-                        else:
+                        if (
+                            (len(meshL[0].vertices) + len(meshL[1].vertices))
+                            / len(mesh2.vertices)
+                            <= 0.9
+                            or len(meshL[0].vertices) / len(mesh2.vertices)
+                            >= 0.8
+                        ):
                             levelThreshold -= levelThreshold/10
                             break
                     else:
