@@ -28,5 +28,4 @@ def load_folder(folder_path='meshes/'):
     return filenameList
 
 
-if __name__ == '__main__':
-    pass
+pass
