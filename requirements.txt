@@ -23,7 +23,7 @@ idna==2.8
 imageio==2.5.0
 importlib-metadata==0.23
 intel-openmp==2019.0
-joblib==0.14.0
+joblib==1.2.0
 jsonschema==3.1.1
 kiwisolver==1.1.0
 Mako==1.1.0
