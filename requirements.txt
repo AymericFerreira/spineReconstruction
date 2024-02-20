@@ -18,7 +18,7 @@ fenics-fiat==2019.1.0
 fenics-ufl==2019.1.0
 filelock==3.0.12
 funcsigs==1.0.2
-future==0.17.1
+future==0.18.3
 idna==2.8
 imageio==2.5.0
 importlib-metadata==0.23
