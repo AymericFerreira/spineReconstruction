@@ -1,3 +1,7 @@
+Note that this project should be superseeded by this other project : https://github.com/SaghatelyanLab/3DSpineReconstructionAndAnalysis
+In this new project, we consider the whole dendrite as well as the dendritic spines, for indidividual dendritic spines the result can be less precise but it uses a 3D segmentation compare to 2D segmentation. There is not anymore a parameter for every 2D plan and I think that it makes more sense. Also we provide a very nice analysis pipeline. We also dropped support of PyMesh that was difficult to install in favor of Trimesh, ...  
+
+
 A collection of python scripts to extract objects from microscopic images and reconstruct the object in 
 3 dimensions. It's also possible to calculate some metrics on the reconstructed objects. 
 
