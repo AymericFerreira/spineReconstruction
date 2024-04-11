@@ -19,7 +19,7 @@ fenics-ufl==2019.1.0
 filelock==3.0.12
 funcsigs==1.0.2
 future==0.18.3
-idna==2.8
+idna==3.7
 imageio==2.5.0
 importlib-metadata==0.23
 intel-openmp==2019.0
