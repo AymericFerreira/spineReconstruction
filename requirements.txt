@@ -79,4 +79,4 @@ tifffile==2019.5.30
 trimesh==3.2.12
 urllib3==1.26.18
 wcwidth==0.1.7
-zipp==0.6.0
+zipp==3.19.1
